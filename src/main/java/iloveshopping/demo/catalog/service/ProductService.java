@@ -23,7 +23,7 @@ public class ProductService {
             case "price_asc" -> Sort.by("price").ascending();
             case "price_desc" -> Sort.by("price").descending();
             case "rating" -> Sort.by("averageRating").descending();
-            default -> Sort.by("name").ascending(); // Relevance Default
+            default -> Sort.by("name").ascending();
         };
 
         Pageable pageable = PageRequest.of(criteria.page(), criteria.size(), sort);
