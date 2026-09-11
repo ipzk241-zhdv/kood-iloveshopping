@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: iloveshopping_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: passwd
+      POSTGRES_PASSWORD: kvit@psql
     ports:
       - "5432:5432"
     volumes:
@@ -28,7 +28,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/iloveshopping_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: passwd
+      SPRING_DATASOURCE_PASSWORD: kvit@psql
       GOOGLE_RECAPTCHA_SECRET: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
     depends_on:
       postgres-db:

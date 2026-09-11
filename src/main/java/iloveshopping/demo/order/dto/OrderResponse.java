@@ -1,0 +1,16 @@
+package iloveshopping.demo.order.dto;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public record OrderResponse(
+        Long id,
+        String status,
+        BigDecimal totalAmount,
+        String customerEmail,
+        String shippingAddress,
+        String shippingMethod,
+        List<OrderItemResponse> items,
+        LocalDateTime createdAt
+) {}
