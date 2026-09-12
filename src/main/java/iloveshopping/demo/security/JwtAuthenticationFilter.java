@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import iloveshopping.demo.user.repository.UserRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,10 +21,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider, @Lazy UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, @Lazy UserDetailsService userDetailsService, UserRepository userRepository) {
         this.jwtProvider = jwtProvider;
         this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -34,9 +37,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtProvider.validateToken(token)) {
             String username = jwtProvider.extractUsername(token);
             var userDetails = userDetailsService.loadUserByUsername(username);
+            var domainUser = userRepository.findByEmail(username).orElse(null);
+            if (domainUser == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             var authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
+                    domainUser, null, userDetails.getAuthorities()
             );
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);

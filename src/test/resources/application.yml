@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:shopping;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+
+google:
+  recaptcha:
+    secret: dummy-secret-key

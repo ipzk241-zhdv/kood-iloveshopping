@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import iloveshopping.demo.shared.EncryptedStringConverter;
 
 @Entity
 @Table(name = "orders")
@@ -35,7 +36,8 @@ public class Order {
     @Column(nullable = false)
     private String customerEmail;
 
-    @Column(nullable = false)
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(nullable = false, length = 2048)
     private String shippingAddress;
 
     @Column(nullable = false)

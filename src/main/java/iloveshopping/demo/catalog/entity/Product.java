@@ -54,7 +54,13 @@ public class Product {
     @Builder.Default
     private List<ProductImage> images = new ArrayList<>();
 
-    public Object getImageUrl() {
-        return null;
+    /** A cart-safe thumbnail; product images themselves stay in the catalog table. */
+    public String getImageUrl() {
+        return images.stream()
+                .filter(ProductImage::isPrimary)
+                .findFirst()
+                .or(() -> images.stream().findFirst())
+                .map(ProductImage::getImageUrl)
+                .orElse(null);
     }
 }

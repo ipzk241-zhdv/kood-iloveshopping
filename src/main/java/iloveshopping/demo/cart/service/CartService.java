@@ -26,7 +26,8 @@ public class CartService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
+    // A first cart lookup may create the guest or persistent cart.
+    @Transactional
     public CartResponse getCart(User user, String guestSessionId) {
         Cart cart = getOrCreateCartEntity(user, guestSessionId);
         return mapToCartResponse(cart);
@@ -37,6 +38,11 @@ public class CartService {
         Cart cart = getOrCreateCartEntity(user, guestSessionId);
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + request.productId()));
+
+        if (product.getStockQuantity() == null || product.getStockQuantity() < request.quantity()) {
+            throw new IllegalStateException("Only " + Math.max(0, product.getStockQuantity() == null ? 0 : product.getStockQuantity())
+                    + " item(s) are currently in stock");
+        }
 
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(product.getId()))
@@ -66,6 +72,9 @@ public class CartService {
             throw new IllegalArgumentException("Item does not belong to this cart");
         }
 
+        if (request.quantity() > item.getProduct().getStockQuantity()) {
+            throw new IllegalStateException("Requested quantity exceeds available stock");
+        }
         item.setQuantity(request.quantity());
         cartRepository.save(cart);
         return mapToCartResponse(cart);
